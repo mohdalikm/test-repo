@@ -15,19 +15,37 @@ This application serves as a testing ground for AI code analysis tools to identi
 
 ## 📁 Project Structure
 
+This project follows standard Python package conventions with a modern src-layout structure:
+
 ```
-├── main.py                    # Main application with various performance issues
-├── data_processor.py          # Data processing with pandas inefficiencies and memory leaks
-├── database.py               # Database operations with N+1 queries and missing indexes
-├── utils.py                  # Utility functions with algorithmic and caching issues
-├── generate_test_data.py     # Script to create sample data for testing
-├── requirements.txt          # Python dependencies
-└── README.md                # This file
+├── src/
+│   └── performance_issues/     # Main package
+│       ├── __init__.py        # Package initialization and exports
+│       ├── app.py             # Main application class (formerly main.py)
+│       ├── cli.py             # Command-line interface
+│       ├── config.py          # Configuration management
+│       ├── data_processor.py  # Data processing with performance issues
+│       ├── database.py        # Database operations with inefficiencies
+│       └── utils.py           # Utility functions with various issues
+├── tests/                     # Comprehensive unit test suite
+│   ├── test_app.py           # Tests for main application
+│   ├── test_data_processor.py # Data processing tests
+│   └── test_database.py      # Database operation tests
+├── config/
+│   └── default_config.json   # Default configuration file
+├── pyproject.toml            # Modern Python package configuration
+├── setup.py                  # Backward compatibility setup file
+├── requirements.txt          # Runtime dependencies
+├── pytest.ini              # Test configuration
+├── .flake8                  # Linting configuration
+├── .gitignore              # Git ignore patterns
+├── mypy.ini                # Type checking configuration
+└── README.md               # This documentation
 ```
 
 ## 🐛 Performance Issues Included
 
-### 1. **main.py** - Core Application Issues
+### 1. **app.py** - Core Application Issues
 - **Inefficient list operations**: O(n²) list concatenation in loops
 - **Redundant calculations**: Recalculating same values multiple times
 - **Poor data structure choices**: Using lists for membership testing instead of sets
@@ -62,6 +80,11 @@ This application serves as a testing ground for AI code analysis tools to identi
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- Python 3.9 or higher
+- Virtual environment (recommended)
+
 ### Installation
 
 1. Clone the repository:
@@ -70,76 +93,150 @@ git clone <repository-url>
 cd test-repo
 ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
 ```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install the package in development mode:
+```bash
+# Install with all dependencies
+pip install -e .
+
+# Or install dependencies separately
 pip install -r requirements.txt
 ```
 
-3. Generate test data:
+### Command-Line Interface
+
+The application provides a comprehensive CLI for running performance tests:
+
 ```bash
-python generate_test_data.py
+# Run the complete performance test suite
+performance-issues run
+
+# Run with specific dataset size
+performance-issues run --size large --iterations 3
+
+# Generate sample data for testing
+performance-issues generate-data --file-count 10 --rows-per-file 5000
+
+# Analyze previous test results
+performance-issues analyze --input results.json --format table
+
+# Test database operations
+performance-issues database --test-queries
+
+# Test utility functions
+performance-issues utils --test-type math --iterations 2
+
+# Get help for any command
+performance-issues --help
+performance-issues run --help
 ```
 
-### Running the Application
+### Python API Usage
 
-Run the main application to see all performance issues in action:
-```bash
-python main.py
-```
+You can also use the package programmatically:
 
-**Warning**: The application will be slow due to intentional performance issues!
+```python
+from performance_issues import PerformanceProblemApp, DataProcessor, DatabaseManager
 
-### Individual Module Testing
+# Run performance tests
+with PerformanceProblemApp() as app:
+    results = app.run_performance_test()
+    print(f"Total execution time: {sum(results.values()):.2f} seconds")
 
-Test specific modules:
-```bash
 # Test data processing issues
-python -c "from data_processor import DataProcessor; dp = DataProcessor(); dp.create_sample_data_files('test_data')"
+processor = DataProcessor()
+processor.create_sample_data_files('test_data', file_count=5)
 
-# Test database issues
-python -c "from database import DatabaseManager; db = DatabaseManager(); print(db.inefficient_aggregation_queries())"
+# Test database operations
+db = DatabaseManager()
+try:
+    stats = db.inefficient_aggregation_queries()
+    print(f"Database stats: {stats}")
+finally:
+    db.close_all_connections()
+```
 
-# Test utility issues
-python utils.py
+### Running Tests
+
+Execute the comprehensive test suite:
+
+```bash
+# Run all tests with coverage
+pytest
+
+# Run specific test categories
+pytest -m unit          # Unit tests only
+pytest -m performance   # Performance tests only
+pytest -m slow          # Skip slow tests: pytest -m "not slow"
+
+# Run tests with coverage report
+pytest --cov=src/performance_issues --cov-report=html
+
+# Run tests for a specific module
+pytest tests/test_app.py
 ```
 
 ## 📊 Expected Performance Problems
 
 When running this application, you should observe:
 
-- **High CPU usage** due to inefficient algorithms
-- **High memory consumption** from memory leaks and poor data handling
-- **Slow execution times** from O(n²) algorithms and redundant calculations
-- **Excessive database queries** from N+1 query patterns
-- **Blocking I/O operations** that could be parallelized
+- **High CPU usage** due to inefficient algorithms (O(n²) operations, poor sorting choices)
+- **High memory consumption** from memory leaks and unbounded caches
+- **Slow execution times** from redundant calculations and inefficient loops
+- **Excessive database queries** from N+1 query patterns and missing indexes
+- **Blocking I/O operations** that could be parallelized or batched
 - **Poor cache hit rates** due to inefficient caching strategies
+- **String processing inefficiencies** from repeated concatenation and parsing
+- **Inefficient data structure usage** (lists for membership testing, etc.)
 
 ## 🔧 Tools for Performance Analysis
 
-The following tools can help identify the performance issues:
+The application includes built-in profiling support and can be analyzed with various tools:
 
-### Profiling Tools
+### Built-in Profiling
 ```bash
-# CPU profiling with cProfile
-python -m cProfile -s cumulative main.py
+# Run performance tests with profiling enabled
+performance-issues run --profile --iterations 3
 
-# Memory profiling
-pip install memory-profiler
-python -m memory_profiler main.py
-
-# Line-by-line profiling
-pip install line-profiler
-kernprof -l -v main.py
+# Analyze results from multiple runs  
+performance-issues analyze --input results.json --format table
 ```
 
-### Monitoring Tools
+### External Profiling Tools
 ```bash
-# Real-time performance monitoring
-pip install py-spy
-py-spy top --pid <process-id>
+# CPU profiling with cProfile
+python -m cProfile -s cumulative -m performance_issues.cli run
 
-# Database query analysis (for SQLite)
-# Enable query logging and analyze slow queries
+# Memory profiling with memory-profiler (already installed)
+python -m memory_profiler -m performance_issues.app
+
+# Line-by-line profiling with line-profiler
+pip install line-profiler
+kernprof -l -v src/performance_issues/app.py
+
+# Real-time performance monitoring with py-spy (already installed)
+performance-issues run --size large &
+py-spy top --pid $!
+```
+
+### Code Quality and Analysis
+```bash
+# Type checking with mypy
+mypy src/performance_issues/
+
+# Code formatting with black
+black src/ tests/
+
+# Linting with flake8
+flake8 src/ tests/
+
+# Run all quality checks
+pytest --cov=src/performance_issues --mypy --flake8
 ```
 
 ## 🎯 AI Agent Recommendations
@@ -179,16 +276,49 @@ An AI agent analyzing this code should identify and recommend:
 - Minimize DataFrame copies
 - Use efficient aggregation methods
 
-## 📈 Performance Testing
+## 📈 Performance Testing and Benchmarking
 
-The repository includes benchmarking capabilities:
+The package includes comprehensive performance testing and benchmarking:
 
+### CLI Performance Testing
 ```bash
-# Run performance tests
-python -m pytest tests/ --benchmark-only
+# Quick performance test
+performance-issues run
 
-# Generate performance reports
-python -c "from main import PerformanceProblemApp; app = PerformanceProblemApp(); app.run_performance_test()"
+# Comprehensive benchmarking with multiple iterations
+performance-issues run --size large --iterations 5 --profile --output benchmark_results.json
+
+# Generate test data and run analysis
+performance-issues generate-data --file-count 20 --rows-per-file 10000
+performance-issues run --size large --output results.json
+performance-issues analyze --input results.json --format table --output analysis.txt
+```
+
+### Unit Test Benchmarking
+```bash
+# Run performance regression tests
+pytest tests/ -m performance
+
+# Run with coverage and performance markers
+pytest --cov=src/performance_issues -m "unit or performance"
+
+# Benchmark specific functions
+pytest tests/test_app.py::TestPerformanceProblemApp::test_run_performance_test -v
+```
+
+### Configuration Management
+```bash
+# View current configuration
+performance-issues config --show
+
+# Validate configuration
+performance-issues config --validate
+
+# Save configuration to file
+performance-issues config --save my_config.json --show
+
+# Use custom configuration
+performance-issues --config my_config.json run --size small
 ```
 
 ## 🤖 For AI Agents
@@ -196,12 +326,70 @@ python -c "from main import PerformanceProblemApp; app = PerformanceProblemApp()
 This repository is specifically designed for AI code analysis tools. The performance issues are:
 
 1. **Well-documented** with clear comments explaining what's wrong
-2. **Realistic** - based on real-world performance anti-patterns
+2. **Realistic** - based on real-world performance anti-patterns  
 3. **Varied** - covering different types of performance problems
 4. **Measurable** - with clear before/after optimization opportunities
 5. **Educational** - demonstrating both the problem and better alternatives
+6. **Testable** - comprehensive test suite to verify optimizations don't break functionality
+7. **Configurable** - flexible configuration system for different testing scenarios
+8. **CLI-accessible** - easy command-line interface for automated analysis
 
-Each performance issue includes comments starting with "PERFORMANCE ISSUE" and "BAD:" to help identify problematic code patterns.
+### Key Features for AI Analysis
+
+- **Structured codebase** following modern Python package conventions
+- **Type hints** throughout for better static analysis
+- **Comprehensive testing** with performance regression tests
+- **Configuration management** for different analysis scenarios
+- **CLI interface** for automated testing and benchmarking
+- **Detailed documentation** with clear performance anti-patterns
+- **Profiling integration** for before/after optimization measurement
+
+Each performance issue includes comments starting with "PERFORMANCE ISSUE" and "BAD:" to help identify problematic code patterns. The package structure allows for easy integration with automated analysis tools.
+
+## 🏗️ Development
+
+### Package Installation for Development
+
+```bash
+# Install in editable mode with development dependencies
+pip install -e ".[dev]"
+
+# Or install all optional dependencies
+pip install -e ".[dev,profiling,cli]"
+```
+
+### Code Quality Tools
+
+```bash
+# Format code
+black src/ tests/
+
+# Check types
+mypy src/
+
+# Lint code  
+flake8 src/ tests/
+
+# Run all checks
+pre-commit run --all-files  # If using pre-commit hooks
+```
+
+### Adding New Performance Issues
+
+1. Add the performance issue to the appropriate module in `src/performance_issues/`
+2. Include clear comments explaining the problem
+3. Add corresponding unit tests in `tests/`
+4. Update the CLI interface if needed in `src/performance_issues/cli.py`
+5. Document the issue in this README
+
+### Package Structure Guidelines
+
+- Follow PEP 8 and modern Python conventions
+- Include type hints for all public APIs
+- Write comprehensive docstrings
+- Add unit tests for all new functionality
+- Use the configuration system for customizable behavior
+- Maintain backward compatibility in the CLI interface
 
 ## 📝 License
 
@@ -209,4 +397,4 @@ This project is created for educational and testing purposes. Feel free to use i
 
 ---
 
-**Note**: This application is intentionally inefficient. Do not use these patterns in production code!
+**⚠️ Important Note**: This application is intentionally inefficient and contains performance anti-patterns. Do not use these code patterns in production systems! The purpose is to demonstrate common performance problems for educational and AI analysis purposes.

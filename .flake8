@@ -1,0 +1,27 @@
+[flake8]
+# Configuration for flake8 linting
+max-line-length = 88
+extend-ignore = 
+    # E203: whitespace before ':' (conflicts with black)
+    E203,
+    # W503: line break before binary operator (conflicts with black)
+    W503,
+    # F401: imported but unused (sometimes needed for __init__.py)
+    F401
+max-complexity = 10
+exclude = 
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .venv,
+    venv,
+    .tox,
+    .mypy_cache,
+    .pytest_cache,
+    *.egg-info
+per-file-ignores = 
+    # Allow unused imports in __init__.py files
+    __init__.py:F401
+    # Allow long lines in test files for readability
+    tests/*:E501
