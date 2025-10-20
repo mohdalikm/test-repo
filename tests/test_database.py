@@ -13,7 +13,7 @@ from unittest.mock import patch, MagicMock
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from performance_issues.database import DatabaseManager
+from database import DatabaseManager
 
 
 class TestDatabaseManager:

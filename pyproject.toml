@@ -75,21 +75,22 @@ Repository = "https://github.com/example/performance-issues.git"
 "Bug Tracker" = "https://github.com/example/performance-issues/issues"
 
 [project.scripts]
-performance-issues = "performance_issues.cli:main"
-perf-test = "performance_issues.cli:run_performance_test"
-perf-analyze = "performance_issues.cli:analyze_performance"
+performance-issues = "cli:main"
+perf-test = "cli:run_performance_test"
+perf-analyze = "cli:analyze_performance"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["*"]
 
 [tool.setuptools.package-data]
-performance_issues = ["config/*.json", "data/*.csv", "data/*.json"]
+"*" = ["config/*.json", "data/*.csv", "data/*.json"]
 
 [tool.setuptools_scm]
-write_to = "src/performance_issues/_version.py"
+write_to = "src/_version.py"
 
 # Black configuration
 [tool.black]
@@ -115,7 +116,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["performance_issues"]
+known_first_party = ["src"]
 
 # MyPy configuration
 [tool.mypy]
@@ -153,7 +154,7 @@ addopts = [
     "--strict-config",
     "--verbose",
     "--tb=short",
-    "--cov=performance_issues",
+    "--cov=src",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
@@ -168,9 +169,9 @@ markers = [
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["src/performance_issues"]
+source = ["src"]
 omit = [
-    "src/performance_issues/_version.py",
+    "src/_version.py",
     "tests/*",
     "*/site-packages/*",
 ]

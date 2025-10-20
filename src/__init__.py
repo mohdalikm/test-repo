@@ -17,10 +17,10 @@ __version__ = "1.0.0"
 __author__ = "Performance Issues Demo"
 __description__ = "Python application with intentional performance issues for AI analysis"
 
-from .app import PerformanceProblemApp
-from .data_processor import DataProcessor
-from .database import DatabaseManager
-from .utils import MathUtils, FileUtils, NetworkUtils, CacheUtils
+from app import PerformanceProblemApp
+from data_processor import DataProcessor
+from database import DatabaseManager
+from utils import MathUtils, FileUtils, NetworkUtils, CacheUtils
 
 __all__ = [
     "PerformanceProblemApp",

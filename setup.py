@@ -75,7 +75,7 @@ db_requires = [
 setup(
     name="performance-issues",
     use_scm_version={
-        "write_to": "src/performance_issues/_version.py",
+        "write_to": "src/_version.py",
     },
     author="Performance Issues Demo",
     author_email="demo@example.com",
@@ -96,7 +96,7 @@ setup(
     # Include additional files
     include_package_data=True,
     package_data={
-        "performance_issues": [
+        "": [
             "config/*.json",
             "data/*.csv", 
             "data/*.json",
@@ -117,9 +117,9 @@ setup(
     # Entry points
     entry_points={
         "console_scripts": [
-            "performance-issues=performance_issues.cli:main",
-            "perf-test=performance_issues.cli:run_performance_test",
-            "perf-analyze=performance_issues.cli:analyze_performance",
+            "performance-issues=cli:main",
+            "perf-test=cli:run_performance_test",
+            "perf-analyze=cli:analyze_performance",
         ],
     },
     

@@ -16,7 +16,7 @@ from unittest.mock import patch, MagicMock
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from performance_issues.data_processor import DataProcessor
+from data_processor import DataProcessor
 
 
 class TestDataProcessor:

@@ -63,17 +63,18 @@ class NetworkConfig:
 @dataclass
 class AppConfig:
     """Main application configuration."""
-    debug: bool = False
-    log_level: str = "INFO"
-    output_dir: str = "output"
-    data_dir: str = "data"
-    
-    # Sub-configurations
+    # Sub-configurations (must come first as they have no defaults)
     database: DatabaseConfig
     performance_test: PerformanceTestConfig
     cache: CacheConfig
     file_processing: FileProcessingConfig
     network: NetworkConfig
+    
+    # Basic config with defaults
+    debug: bool = False
+    log_level: str = "INFO"
+    output_dir: str = "output"
+    data_dir: str = "data"
     
     def __init__(self):
         """Initialize with default sub-configurations."""

@@ -15,7 +15,7 @@ from typing import List, Dict
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from performance_issues.app import PerformanceProblemApp
+from app import PerformanceProblemApp
 
 
 class TestPerformanceProblemApp:

@@ -15,14 +15,14 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 # Add src to path for imports
-src_path = Path(__file__).parent.parent.parent / "src"
+src_path = Path(__file__).parent
 sys.path.insert(0, str(src_path))
 
 try:
-    from performance_issues.app import PerformanceProblemApp
-    from performance_issues.config import get_config_manager, initialize_config
-    from performance_issues.data_processor import DataProcessor
-    from performance_issues.database import DatabaseManager
+    from app import PerformanceProblemApp
+    from config import get_config_manager, initialize_config
+    from data_processor import DataProcessor
+    from database import DatabaseManager
 except ImportError as e:
     click.echo(f"Error importing modules: {e}", err=True)
     click.echo("Make sure you have installed the package with: pip install -e .", err=True)
@@ -299,7 +299,7 @@ def database(db_path: Optional[str], show_info: bool, test_queries: bool):
 @click.option('--iterations', type=int, default=1, help='Number of iterations')
 def utils(test_type: Optional[str], iterations: int):
     """Test utility functions with performance issues."""
-    from performance_issues.utils import (
+    from utils import (
         MathUtils, FileUtils, NetworkUtils, StringUtils, 
         create_sample_files_for_testing
     )

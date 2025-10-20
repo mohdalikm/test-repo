@@ -11,9 +11,9 @@ import random
 import json
 from typing import List, Dict, Optional
 
-from .data_processor import DataProcessor
-from .database import DatabaseManager
-from .utils import MathUtils, FileUtils
+from data_processor import DataProcessor
+from database import DatabaseManager
+from utils import MathUtils, FileUtils
 
 
 class PerformanceProblemApp:
