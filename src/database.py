@@ -213,11 +213,12 @@ class DatabaseManager:
     
     def get_users_with_posts_n_plus_1(self, user_ids: List[int]) -> List[Dict[str, Any]]:
         """
-        PERFORMANCE ISSUE 3: Classic N+1 query problem.
+        PERFORMANCE ISSUE 3 - FIXED: Efficient user and posts query.
         
-        Demonstrates:
-        - Making 1 query to get users + N queries to get posts for each user
-        - Should use JOIN or batch queries instead
+        Fixed:
+        - Using JOIN queries instead of N+1 pattern
+        - Single query to fetch users with their posts
+        - Eliminated multiple individual database calls
         
         Args:
             user_ids: List of user IDs to fetch
@@ -225,23 +226,105 @@ class DatabaseManager:
         Returns:
             List of users with their posts
         """
-        users = []
+        if not user_ids:
+            return []
         
-        # BAD: N+1 query pattern
-        for user_id in user_ids:
-            # Query 1: Get user (this happens N times)
-            user = self.get_user_by_id(user_id)
-            if user:
-                # Query 2: Get user's posts (this also happens N times)
-                user['posts'] = self.get_user_posts(user_id)
-                
-                # Query 3: Get post comments (making it even worse - N*M queries)
-                for post in user['posts']:
-                    post['comments'] = self.get_post_comments(post['id'])
-                
-                users.append(user)
+        conn = self._get_connection()
+        cursor = conn.cursor()
         
-        return users
+        try:
+            # FIXED: Single query with JOIN to get users and posts together
+            placeholders = ','.join('?' * len(user_ids))
+            
+            # Get users with their posts in a single query
+            cursor.execute(f"""
+                SELECT 
+                    u.id as user_id,
+                    u.username,
+                    u.email,
+                    u.created_at as user_created_at,
+                    u.status,
+                    p.id as post_id,
+                    p.title as post_title,
+                    p.content as post_content,
+                    p.created_at as post_created_at,
+                    p.likes as post_likes
+                FROM users u
+                LEFT JOIN posts p ON u.id = p.user_id
+                WHERE u.id IN ({placeholders})
+                ORDER BY u.id, p.created_at DESC
+            """, user_ids)
+            
+            results = cursor.fetchall()
+            
+            # Group results by user
+            users_dict = {}
+            for row in results:
+                user_id = row['user_id']
+                
+                if user_id not in users_dict:
+                    users_dict[user_id] = {
+                        'id': user_id,
+                        'username': row['username'],
+                        'email': row['email'],
+                        'created_at': row['user_created_at'],
+                        'status': row['status'],
+                        'posts': []
+                    }
+                
+                # Add post if it exists (LEFT JOIN might return NULL for posts)
+                if row['post_id'] is not None:
+                    post = {
+                        'id': row['post_id'],
+                        'title': row['post_title'],
+                        'content': row['post_content'],
+                        'created_at': row['post_created_at'],
+                        'likes': row['post_likes']
+                    }
+                    users_dict[user_id]['posts'].append(post)
+            
+            # Get comments for all posts in a single query (if needed)
+            if users_dict:
+                all_post_ids = []
+                for user in users_dict.values():
+                    for post in user['posts']:
+                        all_post_ids.append(post['id'])
+                
+                if all_post_ids:
+                    placeholders = ','.join('?' * len(all_post_ids))
+                    cursor.execute(f"""
+                        SELECT c.post_id, c.id, c.content, c.created_at, u.username
+                        FROM comments c
+                        JOIN users u ON c.user_id = u.id
+                        WHERE c.post_id IN ({placeholders})
+                        ORDER BY c.post_id, c.created_at
+                    """, all_post_ids)
+                    
+                    comments_results = cursor.fetchall()
+                    
+                    # Group comments by post_id
+                    comments_by_post = {}
+                    for comment_row in comments_results:
+                        post_id = comment_row['post_id']
+                        if post_id not in comments_by_post:
+                            comments_by_post[post_id] = []
+                        
+                        comments_by_post[post_id].append({
+                            'id': comment_row['id'],
+                            'content': comment_row['content'],
+                            'created_at': comment_row['created_at'],
+                            'username': comment_row['username']
+                        })
+                    
+                    # Add comments to posts
+                    for user in users_dict.values():
+                        for post in user['posts']:
+                            post['comments'] = comments_by_post.get(post['id'], [])
+            
+            return list(users_dict.values())
+            
+        finally:
+            cursor.close()
     
     def get_post_comments(self, post_id: int) -> List[Dict[str, Any]]:
         """

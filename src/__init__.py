@@ -1,9 +1,6 @@
 """
 Performance Issues Package
 
-A Python application designed with intentional performance issues for AI agents
-to identify and recommend corrections.
-
 This package demonstrates common performance anti-patterns including:
 - Algorithmic inefficiencies
 - Memory leaks and inefficient memory usage
