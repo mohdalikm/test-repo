@@ -257,11 +257,11 @@ class PerformanceProblemApp:
     
     def string_concatenation_issues(self, words: List[str]) -> str:
         """
-        PERFORMANCE ISSUE 8 - FIXED: Efficient string operations.
+        PERFORMANCE ISSUE 8: Inefficient string operations.
         
-        Fixed:
-        - Using str.join() instead of concatenation in loop for O(n) complexity
-        - Eliminated unnecessary intermediate string operations
+        Demonstrates:
+        - Using string concatenation in loop instead of join
+        - Creating intermediate strings unnecessarily
         
         Args:
             words: List of words to concatenate
@@ -269,11 +269,15 @@ class PerformanceProblemApp:
         Returns:
             Concatenated string
         """
-        # FIXED: Use join() for O(n) complexity instead of O(n²) concatenation
-        result = " ".join(words)
+        result = ""
         
-        # FIXED: Single operation to clean up any double spaces (if needed)
-        result = " ".join(result.split())  # Normalizes whitespace efficiently
+        # BAD: String concatenation in loop (O(n²) complexity)
+        for word in words:
+            result = result + word + " "
+        
+        # BAD: More unnecessary string operations
+        result = result.strip()
+        result = result.replace("  ", " ")  # Fix double spaces
         
         return result
     
