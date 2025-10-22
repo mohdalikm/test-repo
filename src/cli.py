@@ -48,8 +48,7 @@ def main(ctx: click.Context, config: Optional[str], debug: bool, verbose: bool):
     """
     Performance Issues CLI - A tool for analyzing performance problems in Python code.
     
-    This application contains intentional performance issues for AI agents to identify
-    and recommend corrections.
+    
     """
     ctx.ensure_object(dict)
     ctx.obj['debug'] = debug

@@ -2,8 +2,7 @@
 """
 Main application module with multiple performance issues.
 
-This module demonstrates various performance anti-patterns that an AI agent should identify
-and provides methods for testing different types of performance problems.
+This module demonstrates various performance anti-patterns .
 """
 
 import time
