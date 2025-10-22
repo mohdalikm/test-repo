@@ -54,11 +54,11 @@ class PerformanceProblemApp:
     
     def inefficient_list_operations(self, size: int = 10000) -> List[int]:
         """
-        PERFORMANCE ISSUE 1: Inefficient list operations.
+        PERFORMANCE ISSUE 1 - FIXED: Efficient list operations.
         
-        Demonstrates:
-        - Using list concatenation in loop (O(n²) complexity)
-        - Should use list.extend() or list comprehension
+        Fixed:
+        - Using list comprehension for O(n) complexity instead of O(n²)
+        - Eliminated repeated list concatenation
         
         Args:
             size: Number of elements to process
@@ -66,10 +66,8 @@ class PerformanceProblemApp:
         Returns:
             List of processed integers
         """
-        result = []
-        for i in range(size):
-            # BAD: Creates new list each time
-            result = result + [i * 2]
+        # FIXED: Use list comprehension for O(n) complexity
+        result = [i * 2 for i in range(size)]
         return result
     
     def redundant_calculations(self, numbers: List[int]) -> Dict[str, float]:
