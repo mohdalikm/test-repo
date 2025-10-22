@@ -1,0 +1,50 @@
+{
+  "debug": false,
+  "log_level": "INFO",
+  "output_dir": "output",
+  "data_dir": "data",
+  "database": {
+    "db_path": "performance_test.db",
+    "connection_timeout": 30,
+    "max_connections": 10,
+    "enable_foreign_keys": true
+  },
+  "performance_test": {
+    "small_dataset_size": 1000,
+    "medium_dataset_size": 10000,
+    "large_dataset_size": 100000,
+    "iterations": 10,
+    "timeout_seconds": 60,
+    "enable_profiling": false
+  },
+  "cache": {
+    "max_cache_size": 1000,
+    "ttl_seconds": 3600,
+    "enable_cache": true,
+    "cleanup_interval": 300
+  },
+  "file_processing": {
+    "chunk_size": 8192,
+    "max_file_size_mb": 100,
+    "temp_dir": "tmp",
+    "parallel_processing": false,
+    "max_workers": 4
+  },
+  "network": {
+    "timeout_seconds": 30,
+    "max_retries": 3,
+    "retry_delay": 1.0,
+    "use_session_pooling": false,
+    "max_connections_per_host": 10
+  },
+  "codeguru": {
+    "enabled": false,
+    "profiling_group_name": "ecocoder-default-profiling-group",
+    "region_name": "us-east-1",
+    "sampling_interval_seconds": 1,
+    "reporting_interval_seconds": 300,
+    "max_stack_depth": 1000,
+    "cpu_limit_percentage": 5.0,
+    "memory_limit_bytes": 134217728
+  }
+}

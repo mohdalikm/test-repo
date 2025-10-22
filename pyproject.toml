@@ -1,0 +1,197 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "performance-issues"
+dynamic = ["version"]
+description = "Python application with intentional performance issues for AI analysis"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Performance Issues Demo", email = "demo@example.com"}
+]
+maintainers = [
+    {name = "Performance Issues Demo", email = "demo@example.com"}
+]
+keywords = ["performance", "optimization", "ai", "analysis", "benchmarking"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Benchmark",
+    "Topic :: Education",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=1.5.0",
+    "numpy>=1.24.0",
+    "requests>=2.28.0",
+    "click>=8.0.0",
+    "codeguru_profiler_agent>=1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+visualization = [
+    "matplotlib>=3.6.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.0.0",
+]
+profiling = [
+    "memory-profiler>=0.60.0",
+    "line-profiler>=4.0.0",
+    "py-spy>=0.3.0",
+    "scalene>=1.5.0",
+]
+database = [
+    "sqlalchemy>=1.4.0",
+    "psycopg2-binary>=2.9.0",
+    "pymongo>=4.0.0",
+]
+all = [
+    "performance-issues[dev,visualization,profiling,database]"
+]
+
+[project.urls]
+Homepage = "https://github.com/example/performance-issues"
+Documentation = "https://performance-issues.readthedocs.io"
+Repository = "https://github.com/example/performance-issues.git"
+"Bug Tracker" = "https://github.com/example/performance-issues/issues"
+
+[project.scripts]
+performance-issues = "cli:main"
+perf-test = "cli:run_performance_test"
+perf-analyze = "cli:analyze_performance"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+
+[tool.setuptools.package-data]
+"*" = ["config/*.json", "data/*.csv", "data/*.json"]
+
+[tool.setuptools_scm]
+write_to = "src/_version.py"
+
+# Black configuration
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src"]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas.*",
+    "numpy.*",
+    "matplotlib.*",
+    "seaborn.*",
+    "requests.*",
+    "pytest.*",
+]
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "performance: marks tests as performance tests",
+    "unit: marks tests as unit tests",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "src/_version.py",
+    "tests/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Flake8 configuration (in setup.cfg as flake8 doesn't support pyproject.toml yet)
