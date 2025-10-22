@@ -61,6 +61,19 @@ class NetworkConfig:
 
 
 @dataclass
+class CodeGuruConfig:
+    """AWS CodeGuru Profiler configuration."""
+    enabled: bool = False
+    profiling_group_name: str = "ecocoder-default-profiling-group"
+    region_name: str = "us-east-1"
+    sampling_interval_seconds: int = 1
+    reporting_interval_seconds: int = 300  # 5 minutes
+    max_stack_depth: int = 1000
+    cpu_limit_percentage: float = 5.0
+    memory_limit_bytes: int = 128 * 1024 * 1024  # 128 MB
+
+
+@dataclass
 class AppConfig:
     """Main application configuration."""
     # Sub-configurations (must come first as they have no defaults)
@@ -69,6 +82,7 @@ class AppConfig:
     cache: CacheConfig
     file_processing: FileProcessingConfig
     network: NetworkConfig
+    codeguru: CodeGuruConfig
     
     # Basic config with defaults
     debug: bool = False
@@ -83,6 +97,7 @@ class AppConfig:
         self.cache = CacheConfig()
         self.file_processing = FileProcessingConfig()
         self.network = NetworkConfig()
+        self.codeguru = CodeGuruConfig()
 
 
 class ConfigManager:

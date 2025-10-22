@@ -36,5 +36,15 @@
     "retry_delay": 1.0,
     "use_session_pooling": false,
     "max_connections_per_host": 10
+  },
+  "codeguru": {
+    "enabled": false,
+    "profiling_group_name": "ecocoder-default-profiling-group",
+    "region_name": "us-east-1",
+    "sampling_interval_seconds": 1,
+    "reporting_interval_seconds": 300,
+    "max_stack_depth": 1000,
+    "cpu_limit_percentage": 5.0,
+    "memory_limit_bytes": 134217728
   }
 }

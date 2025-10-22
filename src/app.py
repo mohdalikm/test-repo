@@ -15,6 +15,14 @@ from data_processor import DataProcessor
 from database import DatabaseManager
 from utils import MathUtils, FileUtils
 
+# AWS CodeGuru Profiler
+try:
+    from codeguru_profiler_agent import Profiler
+    CODEGURU_AVAILABLE = True
+except ImportError:
+    CODEGURU_AVAILABLE = False
+    print("Warning: CodeGuru Profiler agent not available. Install with: pip install codeguru_profiler_agent")
+
 
 class PerformanceProblemApp:
     """
@@ -372,6 +380,35 @@ class PerformanceProblemApp:
         self.cleanup()
 
 
-if __name__ == "__main__":
+def start_application():
+    """Start the main application with performance testing."""
+    print("Starting application with CodeGuru Profiler...")
     with PerformanceProblemApp() as app:
-        app.run_performance_test()
+        results = app.run_performance_test()
+        print(f"\nApplication completed. Total tests run: {len(results)}")
+        return results
+
+
+if __name__ == "__main__":
+    # Start CodeGuru Profiler if available
+    profiler = None
+    if CODEGURU_AVAILABLE:
+        try:
+            profiler = Profiler(profiling_group_name="ecocoder-default-profiling-group")
+            profiler.start()
+            print("CodeGuru Profiler started successfully")
+        except Exception as e:
+            print(f"Warning: Failed to start CodeGuru Profiler: {e}")
+            profiler = None
+    
+    try:
+        # Run the application
+        start_application()
+    finally:
+        # Stop profiler if it was started
+        if profiler and CODEGURU_AVAILABLE:
+            try:
+                profiler.stop()
+                print("CodeGuru Profiler stopped")
+            except Exception as e:
+                print(f"Warning: Error stopping CodeGuru Profiler: {e}")

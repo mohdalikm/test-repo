@@ -120,6 +120,12 @@ python src/cli.py run
 # Run with specific dataset size and iterations
 python src/cli.py run --size large --iterations 3
 
+# Enable AWS CodeGuru Profiler for performance analysis
+python src/cli.py run --size large --codeguru --profiling-group my-app-group
+
+# Run with both local profiling and CodeGuru
+python src/cli.py run --size medium --profile --codeguru --iterations 2
+
 # Generate sample data for testing
 python src/cli.py generate-data --file-count 10 --rows-per-file 5000
 
@@ -136,6 +142,27 @@ python src/cli.py utils --test-type math --iterations 2
 python src/cli.py --help
 python src/cli.py run --help
 ```
+
+#### AWS CodeGuru Profiler Integration
+
+The application includes built-in support for AWS CodeGuru Profiler:
+
+```bash
+# Enable CodeGuru Profiler with default settings
+python src/cli.py run --codeguru
+
+# Specify custom profiling group
+python src/cli.py run --codeguru --profiling-group my-custom-group
+
+# Run with CodeGuru for extended analysis
+python src/cli.py run --size large --iterations 5 --codeguru --output results.json
+```
+
+**Prerequisites for CodeGuru Profiler:**
+- AWS account with CodeGuru Profiler enabled
+- Proper AWS credentials configured (AWS CLI, environment variables, or IAM role)
+- CodeGuru profiling group created in your AWS account
+- `codeguru_profiler_agent` package installed (included in requirements)
 
 ### Python API Usage
 
@@ -250,11 +277,33 @@ The application includes comprehensive development and analysis tools:
 # Run application with built-in monitoring
 python src/cli.py run --profile --iterations 3
 
+# Enable AWS CodeGuru Profiler for cloud-based analysis
+python src/cli.py run --codeguru --size large --iterations 3
+
+# Combine local profiling with CodeGuru
+python src/cli.py run --profile --codeguru --output detailed_results.json
+
 # Analyze results from multiple runs  
 python src/cli.py analyze --input results.json --format table
 
 # Generate comprehensive reports
 python src/cli.py config --show --validate
+```
+
+### AWS CodeGuru Profiler Integration
+```bash
+# Set up CodeGuru Profiler (requires AWS credentials)
+# 1. Configure AWS credentials
+aws configure
+
+# 2. Create profiling group (one-time setup)
+aws codeguruprofiler create-profiling-group --profiling-group-name ecocoder-default-profiling-group
+
+# 3. Run application with CodeGuru enabled
+python src/cli.py run --codeguru --size large
+
+# 4. View results in AWS Console
+# Navigate to AWS CodeGuru Profiler in your AWS Console
 ```
 
 ### External Development Tools

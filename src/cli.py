@@ -28,6 +28,13 @@ except ImportError as e:
     click.echo("Make sure you have installed the package with: pip install -e .", err=True)
     sys.exit(1)
 
+# AWS CodeGuru Profiler
+try:
+    from codeguru_profiler_agent import Profiler
+    CODEGURU_AVAILABLE = True
+except ImportError:
+    CODEGURU_AVAILABLE = False
+
 
 @click.group()
 @click.option('--config', '-c', type=click.Path(exists=True), 
@@ -73,8 +80,13 @@ def main(ctx: click.Context, config: Optional[str], debug: bool, verbose: bool):
               help='Output file for results')
 @click.option('--profile/--no-profile', default=False,
               help='Enable performance profiling')
+@click.option('--codeguru/--no-codeguru', default=False,
+              help='Enable AWS CodeGuru Profiler')
+@click.option('--profiling-group', default='ecocoder-default-profiling-group',
+              help='CodeGuru profiling group name')
 @click.pass_context
-def run(ctx: click.Context, size: str, iterations: int, output: Optional[str], profile: bool):
+def run(ctx: click.Context, size: str, iterations: int, output: Optional[str], 
+        profile: bool, codeguru: bool, profiling_group: str):
     """Run the performance test suite with intentional issues."""
     click.echo("Starting performance test suite...")
     
@@ -89,6 +101,19 @@ def run(ctx: click.Context, size: str, iterations: int, output: Optional[str], p
     
     dataset_size = size_map[size]
     click.echo(f"Using {size} dataset size: {dataset_size} items")
+    
+    # Initialize CodeGuru Profiler if requested
+    codeguru_profiler = None
+    if codeguru and CODEGURU_AVAILABLE:
+        try:
+            codeguru_profiler = Profiler(profiling_group_name=profiling_group)
+            codeguru_profiler.start()
+            click.echo(f"✅ CodeGuru Profiler started with group: {profiling_group}")
+        except Exception as e:
+            click.echo(f"⚠️  Warning: Failed to start CodeGuru Profiler: {e}", err=True)
+            codeguru_profiler = None
+    elif codeguru and not CODEGURU_AVAILABLE:
+        click.echo("⚠️  Warning: CodeGuru Profiler not available. Install with: pip install codeguru_profiler_agent", err=True)
     
     all_results = []
     
@@ -148,6 +173,14 @@ def run(ctx: click.Context, size: str, iterations: int, output: Optional[str], p
         with open(output, 'w') as f:
             json.dump(all_results, f, indent=2)
         click.echo(f"\nResults saved to {output}")
+    
+    # Stop CodeGuru Profiler if it was started
+    if codeguru_profiler:
+        try:
+            codeguru_profiler.stop()
+            click.echo("✅ CodeGuru Profiler stopped")
+        except Exception as e:
+            click.echo(f"⚠️  Warning: Error stopping CodeGuru Profiler: {e}", err=True)
     
     click.echo("\nPerformance test completed!")
 

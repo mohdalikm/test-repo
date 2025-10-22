@@ -40,6 +40,7 @@ install_requires = [
     "numpy>=1.24.0", 
     "requests>=2.28.0",
     "click>=8.0.0",
+    "codeguru_profiler_agent>=1.2.0",
 ]
 
 # Development requirements
